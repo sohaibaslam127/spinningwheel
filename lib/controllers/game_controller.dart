@@ -18,7 +18,7 @@ class GameController extends GetxController
   void onInit() {
     super.onInit();
     controller = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 900),
       vsync: this,
     );
     animation = CurvedAnimation(parent: controller, curve: Curves.linear);
@@ -67,6 +67,9 @@ class GameController extends GetxController
                   Navigator.pop(context, true);
                   await Get.find<StorageService>().clearHistory();
                   recentNumbers = [];
+                  selectedNumber = null;
+                  isSpinning = false;
+                  controller.stop();
                   update();
                 },
                 child: Text('Delete'),
@@ -77,6 +80,9 @@ class GameController extends GetxController
   }
 
   void handleTapAt(Offset tapPosition, Size wheelSize) {
+    if (selectedNumber != null || isSpinning == false) {
+      return;
+    }
     final center = Offset(wheelSize.width / 2, wheelSize.height / 2);
     final dx = tapPosition.dx - center.dx;
     final dy = tapPosition.dy - center.dy;
